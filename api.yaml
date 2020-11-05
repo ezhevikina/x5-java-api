@@ -1,0 +1,488 @@
+swagger: "2.0"
+info:
+  description: "This is a sample pizza delivery server."
+  version: "1.0.0"
+  title: "Pizza Delivery"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "apiteam@swagger.io"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "pizzadelivery.swagger.io"
+basePath: "/v2"
+tags:
+  - name: "restaurants"
+    description: "Find your special pizza place"
+    externalDocs:
+      description: "Tell me more"
+      url: "http://swagger.io"
+  - name: "orders"
+    description: "Make them deliver"
+schemes:
+  - "https"
+  - "http"
+paths:
+  /restaurants:
+    get:
+      tags:
+        - "restaurants"
+      description: "Returns all restaurants"
+      operationId: "getAllRestaurants"
+      parameters:
+        - name: "limit"
+          in: "query"
+          default: 10
+          type: "integer"
+          format: "int32"
+        - name: "offset"
+          in: "query"
+          default: 0
+          type: "integer"
+          format: "int32"
+      produces:
+        - "application/json"
+        - "application/xml"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/RestaurantsResponse"
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /restaurants/{restaurantId}:
+    get:
+      tags:
+        - "restaurants"
+      summary: "Find restaurant by id"
+      description: "Returns a single restaurant"
+      operationId: "getRestaurantById"
+      produces:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - name: "restaurantId"
+          in: "path"
+          description: "Id of restautant to return"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/RestaurantResponse"
+        "400":
+          description: "Invalid id value (not a number)"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        "404":
+          description: "Restaurant not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /restaurants/{restaurantId}/menu:
+    get:
+      tags:
+        - "restaurants"
+      summary: "Check out restaurant's menu"
+      description: "Returns restaurant's menu items with brief description of each position"
+      operationId: "getRestaurantMenu"
+      produces:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - name: "limit"
+          in: "query"
+          default: 10
+          type: "integer"
+          format: "int32"
+        - name: "offset"
+          in: "query"
+          default: 0
+          type: "integer"
+          format: "int32"
+        - name: "restaurantId"
+          in: "path"
+          description: "ID of restautant to return"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/MenuResponse"
+        "400":
+          description: "Invalid id value (not a number)"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        "404":
+          description: "Restaurant not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /restaurants/{restaurantId}/menu/{itemId}:
+    get:
+      tags:
+        - "restaurants"
+      summary: "All about that pizza"
+      description: "Returns description of menu item by id"
+      operationId: "getMenuItemDescription"
+      produces:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - name: "restaurantId"
+          in: "path"
+          description: "ID of restautant to return"
+          required: true
+          type: "integer"
+          format: "int64"
+        - name: "itemId"
+          in: "path"
+          description: "Menu item id to return"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/MenuItemDescriptionResponse"
+        "400":
+          description: "Invalid id value (not a number)"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        "404":
+          description: "Restaurant or menu item not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /orders:
+    post:
+      tags:
+        - "orders"
+      summary: "Place an order - get your pizza right away!"
+      description: "Place an order"
+      operationId: "placeOrder"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      produces:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Order placed for delivery"
+          required: true
+          schema:
+            $ref: "#/definitions/Order"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/OrderResponse"
+        "400":
+          description: "Invalid order"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /orders/{orderId}:
+    get:
+      tags:
+        - "orders"
+      summary: "Track order by id"
+      description: "Get all info about that hot special pizza made for you"
+      operationId: "getOrderById"
+      produces:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - name: "orderId"
+          in: "path"
+          description: "Order id to track the delivery"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/OrderResponse"
+        "400":
+          description: "Invalid id value (not a number)"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        "404":
+          description: "Order not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    patch:
+      tags:
+        - "orders"
+      summary: "Update order status by id"
+      description: "For valid response use \"placed\", \"on_the_way\", \"delivered\" or \"cancelled\" status"
+      operationId: "updateOrderStatus"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      produces:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - name: "orderId"
+          in: "path"
+          description: "Id of the order to be updated"
+          required: true
+          type: "integer"
+          format: "int64"
+        - name: "status"
+          in: "body"
+          required: true
+          description: "New order status"
+          schema:
+            $ref: "#/definitions/StatusUpdateBody"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/OrderResponse"
+        "400":
+          description: "Invalid id or status value"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        "404":
+          description: "Order not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+definitions:
+  Order:
+    type: "object"
+    required:
+      - "id"
+      - "restaurantId"
+      - "items"
+      - "delivery"
+      - "status"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      restaurantId:
+        type: "integer"
+        format: "int64"
+      items:
+        items:
+          $ref: "#/definitions/OrderItem"
+        type: "array"
+      delivery:
+        $ref: "#/definitions/Delivery"
+      status:
+        type: "string"
+        description: "Order Status"
+        enum:
+          - "placed"
+          - "cancelled"
+          - "on_the_way"
+          - "delivered"
+    xml:
+      name: "Order"
+  OrderItem:
+    type: "object"
+    required:
+      - "id"
+      - "name"
+      - "quantity"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+        example: "Pepperoni pizza"
+      quantity:
+        type: "integer"
+        format: "int32"
+    xml:
+      name: "OrderItem"
+  Delivery:
+    type: "object"
+    required:
+      - "deliveryDate"
+      - "address"
+    properties:
+      deliveryDate:
+        type: "string"
+        format: "date-time"
+        example: "2020-11-21T17:32:28Z"
+      address:
+        type: "string"
+      recipientName:
+        type: "string"
+    xml:
+      name: "Delivery"
+  OrderResponse:
+    properties:
+      result:
+        $ref: "#/definitions/Order"
+    xml:
+      name: "OrderResponse"
+  Restaurant:
+    type: "object"
+    required:
+      - "restaurantId"
+      - "name"
+      - "address"
+    properties:
+      restaurantId:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      address:
+        type: "string"
+      phoneNumber:
+        type: "string"
+      workingHours:
+        type: "string"
+        default: "24/7"
+    xml:
+      name: "Restaurant"
+  RestaurantResponse:
+    properties:
+      result:
+        $ref: "#/definitions/Restaurant"
+    xml:
+      name: "RestaurantResponse"
+  RestaurantsResponse:
+    properties:
+      result:
+        type: "array"
+        items:
+          $ref: "#/definitions/Restaurant"
+      pagination:
+        $ref: "#/definitions/Pagination"
+    xml:
+      name: "RestaurantsResponse"
+  MenuResponse:
+    type: "object"
+    properties:
+      result:
+        type: "array"
+        items:
+          $ref: "#/definitions/MenuItem"
+      pagination:
+        type: "array"
+        items:
+          $ref: "#/definitions/Pagination"
+    xml:
+      name: "MenuResponse"
+  MenuItem:
+    type: "object"
+    required:
+      - "id"
+      - "name"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      weight:
+        type: "integer"
+        format: "int32"
+      briefDescription:
+        type: "string"
+    xml:
+      name: "MenuItem"
+  MenuItemDescription:
+    type: "object"
+    required:
+      - "id"
+      - "name"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      weight:
+        type: "integer"
+        format: "int32"
+      fullDescription:
+        type: "string"
+    xml:
+      name: "MenuItemDescription"
+  MenuItemDescriptionResponse:
+    properties:
+      result:
+        $ref: "#/definitions/MenuItemDescription"
+    xml:
+      name: "MenuItemDescriptionResponse"
+  ErrorResponse:
+    required:
+      - "code"
+      - "message"
+    properties:
+      errors:
+        type: "array"
+        items:
+          $ref: "#/definitions/Error"
+    xml:
+      name: "Error"
+  Pagination:
+    properties:
+      total:
+        type : "integer"
+      limit:
+        type : "integer"
+      offset:
+        type : "integer"
+  Error:
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      message:
+        type: "string"
+  StatusUpdateBody:
+    type: "object"
+    required:
+      - "status"
+    properties:
+      status:
+        type: "string"
+        enum:
+          - "placed"
+          - "cancelled"
+          - "on_the_way"
+          - "delivered"
+    xml:
+      name: "StatusUpdateBody"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
